@@ -42,12 +42,12 @@ async function run() {
         }
     })
 
-    app.get('/crafts/:category', async(req,res) => {
-        const category = req.params.category;
-        const query = {subcategory : category}
-        const result = await craftcollections.find(query).toArray();
-        res.send(result);
-    })
+    // app.get('/crafts/:category', async(req,res) => {
+    //     const category = req.params.category;
+    //     const query = {subcategory : category}
+    //     const result = await craftcollections.find(query).toArray();
+    //     res.send(result);
+    // })
     app.get('/crafts/:id',async(req,res) => {
         const id = req.params.id;
         const query = {_id : new ObjectId(id)};
@@ -64,6 +64,12 @@ async function run() {
     app.post('/crafts', async(req,res) => {
         const craft = req.body;
         const result = await craftcollections.insertOne(craft);
+        res.send(result);
+    })
+    app.delete('/crafts/:id',async (req,res) => {
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)};
+        const result = await craftcollections.deleteOne(query);
         res.send(result);
     })
     // Send a ping to confirm a successful connection
