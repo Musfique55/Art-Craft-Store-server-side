@@ -5,7 +5,21 @@ require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 
-app.use(cors());
+const corsOpts = {
+    origin: ['http://localhost:5173'],
+    methods: [
+    'GET',
+    'POST',
+    'PATCH',
+    'PUT',
+    'DELETE',
+    'OPTIONS'
+],
+    // allowedHeaders: [
+    // 'Content-Type',
+    // ],
+};
+app.use(cors(corsOpts));
 app.use(express.json());
 
 
@@ -28,18 +42,9 @@ async function run() {
     const craftcollections = client.db("craftDB").collection("craft");
 
     app.get('/crafts', async(req,res) => {
-        const email = req.body.email;
-        if(email){
-            const query = {email : email};
-            console.log(query);
-            const cursor = craftcollections.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
-        } else{
             const cursor = craftcollections.find();
             const result = await cursor.toArray();
             res.send(result);
-        }
     })
 
     // app.get('/crafts/:category', async(req,res) => {
@@ -61,6 +66,28 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
+    app.put('/crafts/:id', async(req,res) => {
+        const id = req.params.id;
+        const item = req.body;
+        const filter = {_id : new ObjectId(id)};
+        console.log(item,filter);
+        const options = { upsert: true };
+        const update = {
+            $set : {   
+                    image : item.image,
+                    itemName : item.itemName,
+                    subcategory : item.subcategory,
+                    description : item.description,
+                    price : item.price,
+                    rating : item.rating,
+                    agreement : item.agreement,
+                    processTime : item.processTime,
+                    stockcheck : item.stockcheck
+            }
+        };
+        const result = await craftcollections.updateOne(filter,update,options);
+        res.send(result);
+    })
     app.post('/crafts', async(req,res) => {
         const craft = req.body;
         const result = await craftcollections.insertOne(craft);
@@ -73,7 +100,6 @@ async function run() {
         res.send(result);
     })
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
