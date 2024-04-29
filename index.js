@@ -40,6 +40,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const craftcollections = client.db("craftDB").collection("craft");
+    const categoriesDB = client.db("SubcategoriesDB").collection("subcategories");
 
     app.get('/crafts', async(req,res) => {
             const cursor = craftcollections.find();
@@ -47,6 +48,11 @@ async function run() {
             res.send(result);
     })
 
+    app.get('/subcategories', async(req,res) => {
+        const cursor = categoriesDB.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
     // app.get('/crafts/:category', async(req,res) => {
     //     const category = req.params.category;
     //     const query = {subcategory : category}
