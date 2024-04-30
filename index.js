@@ -37,8 +37,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
     const craftcollections = client.db("craftDB").collection("craft");
     const categoriesDB = client.db("SubcategoriesDB").collection("subcategories");
 
@@ -53,12 +51,12 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
-    // app.get('/crafts/:category', async(req,res) => {
-    //     const category = req.params.category;
-    //     const query = {subcategory : category}
-    //     const result = await craftcollections.find(query).toArray();
-    //     res.send(result);
-    // })
+    app.get('/items/:category', async(req,res) => {
+        const category = req.params.category;
+        const query = {subcategory : category}
+        const result = await craftcollections.find(query).toArray();
+        res.send(result);
+    })
     app.get('/crafts/:id',async(req,res) => {
         const id = req.params.id;
         const query = {_id : new ObjectId(id)};
